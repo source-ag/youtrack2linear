@@ -1,0 +1,13 @@
+# YouTrack Configuration
+YOUTRACK_URL=https://your-instance.myjetbrains.com/youtrack
+YOUTRACK_TOKEN=your_youtrack_permanent_token
+YOUTRACK_PROJECT_KEY=PROJECT_KEY
+YOUTRACK_BATCH_SIZE=100
+
+# Linear Configuration
+LINEAR_TEAM_KEY=your_linear_team_key
+
+# Migration Settings
+OUTPUT_DIR=./output
+MAX_RETRIES=3
+RETRY_DELAY=1.0
