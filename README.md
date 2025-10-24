@@ -35,9 +35,14 @@ Create a `.env` file with your credentials:
 YOUTRACK_URL=https://your-instance.myjetbrains.com/youtrack
 YOUTRACK_TOKEN=your_youtrack_permanent_token
 YOUTRACK_PROJECT_KEY=PROJECT_KEY
+
+# Linear Configuration (optional)
+LINEAR_DEFAULT_STATE=Backlog
 ```
 
-**Note**: If you don't specify a `YOUTRACK_PROJECT_KEY` in your `.env` file, you can still export issues by providing a query with the `--query` parameter.
+**Note**: 
+- If you don't specify a `YOUTRACK_PROJECT_KEY` in your `.env` file, you can still export issues by providing a query with the `--query` parameter.
+- Set `LINEAR_DEFAULT_STATE` to avoid issues being imported into Linear's "Triage" state (which has no bulk edit mode). Common values: `Backlog`, `Todo`, `In Progress`.
 
 ### 3. Export and Transform
 
@@ -136,10 +141,12 @@ The tool creates a simple CSV with all required columns for Linear import, but o
 | *(empty)* | `Creator Email` | Empty for simple import |
 | *(empty)* | `Assignee Email` | Empty for simple import |
 | *(empty)* | `Priority` | Empty for simple import |
-| *(empty)* | `State` | Empty for simple import |
+| *(configured)* | `State` | Set via `LINEAR_DEFAULT_STATE` (e.g., `backlog`) |
 | *(empty)* | `Labels` | Empty for simple import |
 
-**Note**: This approach focuses on importing just the essential issue information (title and description) while maintaining compatibility with Linear's import format.
+**Note**: 
+- This approach focuses on importing just the essential issue information (title and description) while maintaining compatibility with Linear's import format.
+- The `State` column is populated with your configured `LINEAR_DEFAULT_STATE` to avoid issues being imported into Linear's "Triage" state.
 
 ## Query Examples
 

@@ -10,6 +10,7 @@ import re
 from pathlib import Path
 from typing import Dict, Any, List, Optional
 from rich.console import Console
+from config import Config
 
 console = Console()
 
@@ -17,8 +18,8 @@ console = Console()
 class Transformer:
     """Simple transformer that only extracts titles and descriptions."""
     
-    def __init__(self):
-        pass
+    def __init__(self, default_state: Optional[str] = None):
+        self.default_state = default_state
     
     def _clean_description(self, description: Optional[str]) -> Optional[str]:
         """Clean and format description text for Linear."""
@@ -112,7 +113,7 @@ class Transformer:
                     'Creator Email': '',  # Empty for simple import
                     'Assignee Email': '',  # Empty for simple import
                     'Priority': '',  # Empty for simple import
-                    'State': '',  # Empty for simple import
+                    'State': self.default_state or '',  # Use configured state or empty
                     'Labels': ''  # Empty for simple import
                 }
                 writer.writerow(row)
@@ -122,6 +123,14 @@ class Transformer:
 
 def main():
     """Main function to transform YouTrack issues to Linear format."""
+    # Load configuration
+    try:
+        config = Config.from_env()
+    except Exception as e:
+        console.print(f"⚠️  Configuration warning: {e}")
+        console.print("Using default settings (no state configuration)")
+        config = None
+    
     # Input and output files
     input_file = 'output/youtrack_issues.json'
     output_file = 'output/linear_issues.csv'
@@ -139,8 +148,13 @@ def main():
     
     console.print(f"📊 Loaded {len(youtrack_issues)} issues from YouTrack")
     
+    # Get default state from configuration
+    default_state = config.linear.default_state if config and config.linear else None
+    if default_state:
+        console.print(f"🎯 Using default state: {default_state}")
+    
     # Transform issues
-    transformer = Transformer()
+    transformer = Transformer(default_state=default_state)
     linear_issues = transformer.transform_issues(youtrack_issues)
     
     # Save to CSV
@@ -149,11 +163,15 @@ def main():
     console.print(f"\n🎉 Transformation complete!")
     console.print(f"📁 Output file: {output_file}")
     console.print(f"📊 Issues ready for import: {len(linear_issues)}")
+    if default_state:
+        console.print(f"🎯 Issues will be imported with state: {default_state}")
     console.print(f"\n📋 Next steps:")
     console.print(f"1. Go to Linear → Settings → Import Export")
     console.print(f"2. Upload {output_file}")
     console.print(f"3. Map columns: Title → Title, Description → Description")
-    console.print(f"4. Import!")
+    if default_state:
+        console.print(f"4. Map State column to your desired state (or leave as {default_state})")
+    console.print(f"5. Import!")
 
 
 if __name__ == '__main__':

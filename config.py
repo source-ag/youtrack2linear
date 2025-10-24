@@ -26,6 +26,7 @@ class YouTrackConfig(BaseModel):
 class LinearConfig(BaseModel):
     """Linear configuration."""
     team_key: str = Field(..., description="Linear team key to import issues into")
+    default_state: Optional[str] = Field(None, description="Default state for imported issues (e.g., 'backlog', 'todo')")
 
 
 class MigrationConfig(BaseModel):
@@ -69,7 +70,8 @@ class Config(BaseModel):
                 batch_size=int(os.getenv('YOUTRACK_BATCH_SIZE', '100'))
             ),
             linear=LinearConfig(
-                team_key=os.getenv('LINEAR_TEAM_KEY', '')
+                team_key=os.getenv('LINEAR_TEAM_KEY', ''),
+                default_state=os.getenv('LINEAR_DEFAULT_STATE')
             ),
             migration=MigrationConfig(
                 output_dir=os.getenv('OUTPUT_DIR', './output'),

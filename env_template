@@ -6,6 +6,7 @@ YOUTRACK_BATCH_SIZE=100
 
 # Linear Configuration
 LINEAR_TEAM_KEY=your_linear_team_key
+LINEAR_DEFAULT_STATE=backlog
 
 # Migration Settings
 OUTPUT_DIR=./output
