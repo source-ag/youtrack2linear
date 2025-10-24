@@ -17,7 +17,7 @@ This tool helps you migrate from YouTrack to Linear as your issue tracking syste
 
 ```bash
 # Clone and setup
-git clone <repository-url>
+git clone https://github.com/source-ag/youtrack2linear.git
 cd youtrack2linear
 
 # Install Python dependencies
@@ -35,20 +35,21 @@ Create a `.env` file with your credentials:
 YOUTRACK_URL=https://your-instance.myjetbrains.com/youtrack
 YOUTRACK_TOKEN=your_youtrack_permanent_token
 YOUTRACK_PROJECT_KEY=PROJECT_KEY
-
-# Linear Configuration (optional - not needed for CSV import)
-# LINEAR_TEAM_KEY=your_linear_team_key
 ```
+
+**Note**: If you don't specify a `YOUTRACK_PROJECT_KEY` in your `.env` file, you can still export issues by providing a query with the `--query` parameter.
 
 ### 3. Export and Transform
 
 ```bash
 # Export issues from YouTrack
-python migrate.py export --query "project: {PROJECT_KEY}"
+python migrate.py export --query "project: PROJECT_KEY"
 
 # Transform to Linear CSV format
 python transformer.py
 ```
+
+**Note**: If you don't provide a `--query` parameter, the tool will export all issues from the project specified in your `YOUTRACK_PROJECT_KEY` environment variable.
 
 ### 4. Import to Linear
 
@@ -56,6 +57,23 @@ python transformer.py
 2. Upload `output/linear_issues.csv`
 3. Map columns: Title → Title, Description → Description
 4. Import!
+
+## Project Structure
+
+```
+youtrack2linear/
+├── README.md              # This file
+├── LICENSE                # MIT License
+├── requirements.txt       # Python dependencies
+├── migrate.py             # YouTrack export tool
+├── transformer.py         # CSV generation tool
+├── youtrack_client.py     # YouTrack API client
+├── config.py             # Configuration classes
+├── env_template          # Environment variables template
+└── output/               # Generated files
+    ├── youtrack_issues.json  # Raw export from YouTrack
+    └── linear_issues.csv     # CSV for Linear import
+```
 
 ## Files Created
 
@@ -69,10 +87,26 @@ python transformer.py
 python migrate.py test-connections
 
 # Export from YouTrack
-python migrate.py export --query "project: {PROJECT_KEY}"
+python migrate.py export --query "project: PROJECT_KEY"
 
 # Transform to Linear CSV format
 python transformer.py
+```
+
+## Complete Example
+
+```bash
+# 1. Test your connection
+python migrate.py test-connections
+
+# 2. Export issues (replace PROJECT_KEY with your actual project key)
+python migrate.py export --query "project: MYPROJECT"
+
+# 3. Transform to CSV
+python transformer.py
+
+# 4. Upload output/linear_issues.csv to Linear
+# Go to Linear → Settings → Import Export → Upload CSV
 ```
 
 ## Getting API Keys
@@ -111,16 +145,16 @@ The tool creates a simple CSV with all required columns for Linear import, but o
 
 ```bash
 # All issues in a project
-python migrate.py export --query "project: {PROJECT_KEY}"
+python migrate.py export --query "project: PROJECT_KEY"
 
 # Open issues only
-python migrate.py export --query "project: {PROJECT_KEY} State: Open"
+python migrate.py export --query "project: PROJECT_KEY State: Open"
 
 # Issues from last month
-python migrate.py export --query "project: {PROJECT_KEY} created: -1M .. today"
+python migrate.py export --query "project: PROJECT_KEY created: -1M .. today"
 
 # High priority issues
-python migrate.py export --query "project: {PROJECT_KEY} Priority: Major"
+python migrate.py export --query "project: PROJECT_KEY Priority: Major"
 ```
 
 ## Troubleshooting
@@ -137,12 +171,7 @@ python migrate.py export --query "project: {PROJECT_KEY} Priority: Major"
 
 ## Why This Approach?
 
-This tool uses **Linear's web import interface** because:
-- ✅ **Simple and reliable** - No CLI tools or complex setup required
-- ✅ **Web-based interface** - Easy to use and accessible from anywhere
-- ✅ **Visual mapping** - See exactly how your data will be imported
-- ✅ **Error handling** - Linear shows import errors and warnings
-- ✅ **Flexible** - You can choose which columns to import and how to map them
+This tool uses **Linear's web import interface** for simplicity and reliability. No CLI tools or complex setup required - just export, transform, and upload via Linear's web interface.
 
 ## License
 
