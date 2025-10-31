@@ -85,8 +85,12 @@ class YouTrackClient:
         response = self._make_request('GET', f'/admin/projects/{project_key}')
         return response.json()
     
-    def get_issues_count(self, query: Optional[str] = None) -> int:
-        """Get total count of issues matching the query."""
+    def get_issues_count(self, query: Optional[str] = None) -> Optional[int]:
+        """Get total count of issues matching the query.
+        
+        Returns None if the count cannot be determined (header missing).
+        This allows pagination to continue regardless of count accuracy.
+        """
         params = {'$top': 1}  # We only need the count
         if query:
             params['query'] = query
@@ -98,8 +102,8 @@ class YouTrackClient:
         if total_count:
             return int(total_count)
         
-        # Fallback: count items in response
-        return len(response.json())
+        # Return None if header is missing - pagination will still work via batch size check
+        return None
     
     def get_issues(
         self, 
@@ -129,17 +133,18 @@ class YouTrackClient:
         elif self.config.project_key and query:
             query = f"project: {{{self.config.project_key}}} and ({query})"
         
-        # Get total count for progress tracking
+        # Get total count for progress tracking (may be None if header missing)
         total_count = self.get_issues_count(query)
-        console.print(f"📊 Found {total_count} issues to export")
-        
-        if total_count == 0:
-            return
+        if total_count:
+            console.print(f"📊 Found {total_count} issues to export")
+        else:
+            console.print(f"📊 Fetching issues (count unknown, will fetch all available)")
         
         skip = 0
         processed = 0
         
-        while processed < total_count:
+        # Continue fetching until we get fewer issues than batch_size (or until total_count if known)
+        while total_count is None or processed < total_count:
             params = {
                 'fields': fields,
                 '$top': self.config.batch_size,
@@ -201,11 +206,11 @@ class YouTrackClient:
             console=console
         ) as progress:
             
-            # First, get total count
+            # First, get total count (may be None if header missing)
             total_count = self.get_issues_count(query)
-            task = progress.add_task("Exporting issues...", total=total_count)
+            task = progress.add_task("Exporting issues...", total=total_count if total_count else None)
             
-            def update_progress(current: int, total: int):
+            def update_progress(current: int, total: Optional[int]):
                 progress.update(task, completed=current)
             
             try:
