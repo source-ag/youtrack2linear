@@ -100,7 +100,7 @@ def export(ctx, query: Optional[str], output_file: Optional[str]):
         console.print(f"✅ Exported {count} issues to {output_file}")
         console.print("\n📋 Next steps:")
         console.print("1. Run: python transformer.py")
-        console.print("2. Upload output/linear_issues.csv to Linear")
+        console.print("2. Run: linear-import (follow wizard, select 'Linear CSV import')")
         
     except Exception as e:
         console.print(f"❌ Export failed: {e}")

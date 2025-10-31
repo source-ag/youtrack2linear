@@ -166,12 +166,10 @@ def main():
     if default_state:
         console.print(f"🎯 Issues will be imported with state: {default_state}")
     console.print(f"\n📋 Next steps:")
-    console.print(f"1. Go to Linear → Settings → Import Export")
-    console.print(f"2. Upload {output_file}")
-    console.print(f"3. Map columns: Title → Title, Description → Description")
-    if default_state:
-        console.print(f"4. Map State column to your desired state (or leave as {default_state})")
-    console.print(f"5. Import!")
+    console.print(f"1. Run: linear-import")
+    console.print(f"2. Follow the wizard and select 'Linear CSV import'")
+    console.print(f"3. Select {output_file}")
+    console.print(f"4. Map columns and complete the import")
 
 
 if __name__ == '__main__':

@@ -9,7 +9,7 @@ A simple Python tool to export issues from YouTrack and prepare them for import 
 This tool helps you migrate from YouTrack to Linear as your issue tracking system by:
 1. **Exporting issues** from YouTrack using their REST API
 2. **Transforming data** to Linear-compatible CSV format
-3. **Preparing CSV files** for Linear's web import interface
+3. **Importing CSV files** using Linear's official import CLI tool
 
 ## Quick Start
 
@@ -24,6 +24,9 @@ cd youtrack2linear
 python3 -m venv venv
 source venv/bin/activate
 pip install -r requirements.txt
+
+# Install Linear's official import tool
+npm install --global @linear/import
 ```
 
 ### 2. Configuration
@@ -58,10 +61,17 @@ python transformer.py
 
 ### 4. Import to Linear
 
-1. Go to Linear → Settings → Import Export
-2. Upload `output/linear_issues.csv`
-3. Map columns: Title → Title, Description → Description
-4. Import!
+Run Linear's import command and follow the wizard:
+
+```bash
+linear-import
+```
+
+In the wizard:
+1. Select **"Linear CSV import"**
+2. Follow the prompts to select your CSV file (`output/linear_issues.csv`)
+3. Map columns as needed (Title → Title, Description → Description)
+4. Complete the import
 
 ## Project Structure
 
@@ -110,8 +120,9 @@ python migrate.py export --query "project: MYPROJECT"
 # 3. Transform to CSV
 python transformer.py
 
-# 4. Upload output/linear_issues.csv to Linear
-# Go to Linear → Settings → Import Export → Upload CSV
+# 4. Import to Linear using the CLI tool
+linear-import
+# Follow the wizard and select "Linear CSV import"
 ```
 
 ## Getting API Keys
@@ -122,10 +133,11 @@ python transformer.py
 3. Copy the token
 
 ### Linear Import
-No API key needed! The CSV import uses Linear's web interface:
-1. Go to Linear → Settings → Import Export
-2. Upload your CSV file
-3. Map columns and import
+No API key needed! The CSV import uses Linear's official CLI tool:
+1. Install: `npm install --global @linear/import`
+2. Run: `linear-import`
+3. Follow the wizard and select **"Linear CSV import"**
+4. Select your CSV file and complete the import
 
 ## Data Mapping
 
@@ -178,7 +190,7 @@ python migrate.py export --query "project: PROJECT_KEY Priority: Major"
 
 ## Why This Approach?
 
-This tool uses **Linear's web import interface** for simplicity and reliability. No CLI tools or complex setup required - just export, transform, and upload via Linear's web interface.
+This tool uses **Linear's official import CLI tool** (`@linear/import`) for reliability and official support. The interactive wizard makes it easy to configure the import, and it's the officially supported method from Linear.
 
 ## License
 
